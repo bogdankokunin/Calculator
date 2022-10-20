@@ -1,48 +1,85 @@
 const buttons = document.querySelectorAll('.buttons')
 const display = document.querySelector('.display')
-let displayValue = display.textContent;
+const input = document.querySelector('.input')
+let inputValue = input.textContent;
 let num1 = '';
 let num2 = '';
 let operator = '';
 
+
+
 listener();
+
 
 function listener() {
     buttons.forEach((button) => {
         button.addEventListener('click', () => {
-            // digit+noop
+
+            // store number 1
+
             if (button.classList.contains('digit') && (operator === '')) {
-                display.textContent += button.textContent;
-                num1 = display.textContent;                   
-            } else if ((button.classList.contains('operator')) && (!(button.id === '=')) && num2 === '') {
-                operator = button.textContent;
-                clear();
-            } else if (button.classList.contains('operator') && num1 !== '' && num2 === '') {
-                clear();
-                display.textContent += button.textContent;
-                num2 = display.textContent;
-                operate(operator, Number(num1), Number(num2));
-            } else if (button.classList.contains('operator') && (operator !== '') && (num1 !== '') && (num2 !== '')) {
-                num1 = operate(operator, Number(num1), Number(num2));
-                num2 = '';
-                operator = '';
-                display.textContent = num1;
-            } else if ((button.classList.contains('digit')) && (num1 !== '') && (operator !== '')) {
-                display.textContent += button.textContent;
-                num2 = display.textContent;
+                input.textContent += button.textContent;
+                num1 = input.textContent;                   
             }
-             else if (button.id === '=') {
-                display.textContent = operate(operator, Number(num1), Number(num2));
-                num1 = display.textContent;
-                num2 = '';
-                operator = '';
-            }   else if (button.id === 'clear') {
-                clear();
+            
+            // store number 2
+
+            else if ((button.classList.contains('digit')) && (num1 !== '') && (operator !== '')) {
+                if ((input.textContent !== '') && (num2 === '')) {
+                    clearInput();
+                }  
+                input.textContent += button.textContent;
+                num2 = input.textContent;
+            }
+
+            // store operator
+
+            else if (button.classList.contains('operator') && !(button.id === '=') && (num1 !== '') && (num2 === '')) {
+                operator = button.id;
+            }
+
+            // store operator and result of operation in num1
+
+            else if (button.classList.contains('operator') && !(button.id === '=')  && (num1 !== '') && (num2 !== '')) {
+                if (operator !== '') {
+                    input.textContent = operate(operator, Number(num1), Number(num2));
+                    display.textContent = `${num1} ${operator} ${num2} = ${input.textContent}`
+                    operator = button.id;
+                    num2 = '';
+                    num1 = input.textContent;
+                } else {
+                    clearInput();
+                    operator = button.id;
+                    input.textContent = operate(operator, Number(num1), Number(num2));
+                    display.textContent = `${num1} ${operator} ${num2} = ${input.textContent}`
+                    num2 = '';
+                    num1 = input.textContent;
+                }
+            }
+
+            // other buttons
+
+            else if (button.id === '=') {
+                if (!num1 || !num2) {
+                    clearInput();
+                } else {
+                    input.textContent = operate(operator, Number(num1), Number(num2));
+                    display.textContent = `${num1} ${operator} ${num2} = ${input.textContent}`
+                    num1 = input.textContent;
+                    num2 = '';
+                    operator = '';
+                    }
+            }   
+            
+            else if (button.id === 'clear') {
+                fullClear();
                 num1 = '';
                 num2 = '';
                 operator = '';
-            } else if (button.id === 'delete') {
-                display.textContent = display.textContent.slice(-(displayValue.length), (displayValue.length - 1))
+            } 
+            
+            else if (button.id === 'delete') {
+                input.textContent = input.textContent.slice(-(inputValue.length), (inputValue.length - 1))
             }
         })
     })
@@ -54,9 +91,9 @@ function operate(operator, a, b) {
             return add(a, b);
         case '-':
             return subtract(a, b);
-        case '×':
+        case '*':
             return multiply(a, b);
-        case '÷':
+        case '/':
             return divide(a, b);
     }
 }
@@ -71,9 +108,19 @@ function multiply(a,b) {
     return a * b;
 }
 function divide(a,b) {
-    return a / b;
+    if (b !== 0) return a / b;
+    return alert(`Don't divide by zero 😳`);
 }
 
-function clear() {
+function clearInput() {
+    input.textContent = '';
     display.textContent = '';
+}
+
+function fullClear() {
+    input.textContent = '';
+    display.textContent = '';
+    num1 = '';
+    num2 = '';
+    operator = '';
 }
