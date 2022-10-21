@@ -8,10 +8,10 @@ let operator = '';
 
 
 
-listener();
+calculator();
 
 
-function listener() {
+function calculator() {
     buttons.forEach((button) => {
         button.addEventListener('click', () => {
 
@@ -42,16 +42,14 @@ function listener() {
 
             else if (button.classList.contains('operator') && !(button.id === '=')  && (num1 !== '') && (num2 !== '')) {
                 if (operator !== '') {
-                    input.textContent = operate(operator, Number(num1), Number(num2));
-                    display.textContent = `${num1} ${operator} ${num2} = ${input.textContent}`
+                    showResult();
                     operator = button.id;
                     num2 = '';
                     num1 = input.textContent;
                 } else {
                     clearInput();
                     operator = button.id;
-                    input.textContent = operate(operator, Number(num1), Number(num2));
-                    display.textContent = `${num1} ${operator} ${num2} = ${input.textContent}`
+                    showResult();
                     num2 = '';
                     num1 = input.textContent;
                 }
@@ -63,8 +61,7 @@ function listener() {
                 if (!num1 || !num2) {
                     clearInput();
                 } else {
-                    input.textContent = operate(operator, Number(num1), Number(num2));
-                    display.textContent = `${num1} ${operator} ${num2} = ${input.textContent}`
+                    showResult();
                     num1 = input.textContent;
                     num2 = '';
                     operator = '';
@@ -80,6 +77,12 @@ function listener() {
             
             else if (button.id === 'delete') {
                 input.textContent = input.textContent.slice(-(inputValue.length), (inputValue.length - 1))
+                if (num1) {
+                   num1.slice(-(inputValue.length), (inputValue.length - 1))
+                }
+                else if (num2) {
+                    num2.slice(-(inputValue.length), (inputValue.length - 1))
+                }
             }
         })
     })
@@ -112,6 +115,11 @@ function divide(a,b) {
     return alert(`Don't divide by zero 😳`);
 }
 
+function roundNumber(answer) {
+    const rounded = Math.round(answer * 1000) / 1000;
+    return rounded;
+}
+
 function clearInput() {
     input.textContent = '';
     display.textContent = '';
@@ -123,4 +131,10 @@ function fullClear() {
     num1 = '';
     num2 = '';
     operator = '';
+}
+
+function showResult() {
+    input.textContent = operate(operator, Number(num1), Number(num2));
+    if (input.textContent.includes('.')) input.textContent = roundNumber(input.textContent);
+    display.textContent = `${num1} ${operator} ${num2} = ${input.textContent}`
 }
